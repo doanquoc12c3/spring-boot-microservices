@@ -5,10 +5,10 @@ import com.doanquoc.employeeservice.dto.DepartmentDto;
 import com.doanquoc.employeeservice.dto.EmployeeDto;
 import com.doanquoc.employeeservice.entity.Employee;
 import com.doanquoc.employeeservice.repository.EmployeeRepository;
+import com.doanquoc.employeeservice.service.APIClient;
 import com.doanquoc.employeeservice.service.EmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @AllArgsConstructor
@@ -18,7 +18,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 //    private RestTemplate restTemplate;
 
-    private WebClient webClient;
+//    private WebClient webClient;
+
+    private APIClient apiClient;
     @Override
     public EmployeeDto createEmployee(EmployeeDto employeeDto) {
         Employee employee = new Employee(
@@ -45,11 +47,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         Employee employee = employeeRepository.findById(id).get();
 
 //        ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/" + employee.getDepartmentCode(), DepartmentDto.class);
-        DepartmentDto departmentDto = webClient.get()
-                . uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
-                .retrieve()
-                .bodyToMono(DepartmentDto.class)
-                .block();
+//       DepartmentDto departmentDto = webClient.get()
+//                . uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
+//                .retrieve()
+//                .bodyToMono(DepartmentDto.class)
+//                .block();
+        DepartmentDto departmentDto = apiClient.getDepartmentById(employee.getDepartmentCode());
 
         EmployeeDto employeeDto = new EmployeeDto(
                 employee.getId(),
