@@ -7,9 +7,8 @@ import com.doanquoc.employeeservice.entity.Employee;
 import com.doanquoc.employeeservice.repository.EmployeeRepository;
 import com.doanquoc.employeeservice.service.EmployeeService;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @AllArgsConstructor
@@ -17,7 +16,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeRepository employeeRepository;
 
-    private RestTemplate restTemplate;
+//    private RestTemplate restTemplate;
+
+    private WebClient webClient;
     @Override
     public EmployeeDto createEmployee(EmployeeDto employeeDto) {
         Employee employee = new Employee(
@@ -43,9 +44,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     public APIResponseDto getEmployeeById(Long id) {
         Employee employee = employeeRepository.findById(id).get();
 
-        ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/" + employee.getDepartmentCode(), DepartmentDto.class);
+//        ResponseEntity<DepartmentDto> responseEntity = restTemplate.getForEntity("http://localhost:8080/api/departments/" + employee.getDepartmentCode(), DepartmentDto.class);
+        DepartmentDto departmentDto = webClient.get()
+                . uri("http://localhost:8080/api/departments/" + employee.getDepartmentCode())
+                .retrieve()
+                .bodyToMono(DepartmentDto.class)
+                .block();
 
-        DepartmentDto departmentDto = responseEntity.getBody();
         EmployeeDto employeeDto = new EmployeeDto(
                 employee.getId(),
                 employee.getFirstName(),
